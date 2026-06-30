@@ -40,7 +40,7 @@ export default function ClientSymptomsChart({ entries }: { entries: Entry[] }) {
   const latest = entries[entries.length - 1]
   const radarData = latest ? LINES.map((l) => ({
     subject: l.label,
-    value: (latest as Record<string, number | null | string>)[l.key] ?? 0,
+    value: (latest as unknown as Record<string, number | null | string>)[l.key] ?? 0,
     fullMark: 10,
   })) : []
 
@@ -75,7 +75,7 @@ export default function ClientSymptomsChart({ entries }: { entries: Entry[] }) {
           </ResponsiveContainer>
           <div className="mt-2 space-y-1">
             {LINES.map((l) => {
-              const val = (latest as Record<string, number | null | string>)[l.key] as number | null
+              const val = (latest as unknown as Record<string, number | null | string>)[l.key] as number | null
               return (
                 <div key={l.key} className="flex items-center justify-between text-xs">
                   <span style={{ color: '#8a8a7a' }}>{l.label}</span>

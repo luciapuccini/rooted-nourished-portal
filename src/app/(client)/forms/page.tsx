@@ -107,7 +107,7 @@ export default function FormsPage() {
                       {format(new Date(form.submittedAt), 'MMM d, yyyy')}
                     </span>
                   </div>
-                  {parsed.healthGoals && (
+                  {!!parsed.healthGoals && (
                     <p className="text-sm" style={{ color: '#8a8a7a' }}>
                       Goals: {String(parsed.healthGoals).slice(0, 120)}…
                     </p>
