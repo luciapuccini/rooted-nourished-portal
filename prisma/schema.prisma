@@ -1,0 +1,103 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String   @default("CLIENT")
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clientAppointments Appointment[]  @relation("ClientAppointments")
+  coachAppointments  Appointment[]  @relation("CoachAppointments")
+  symptoms           SymptomEntry[]
+  forms              Form[]
+  clientRecords      Record[]       @relation("ClientRecords")
+  coachRecords       Record[]       @relation("CoachRecords")
+  sentMessages       Message[]      @relation("SentMessages")
+  receivedMessages   Message[]      @relation("ReceivedMessages")
+}
+
+model Appointment {
+  id        String   @id @default(cuid())
+  clientId  String
+  coachId   String
+  title     String
+  date      String
+  time      String
+  duration  Int      @default(60)
+  status    String   @default("PENDING")
+  notes     String?
+  zoomLink  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  client  User     @relation("ClientAppointments", fields: [clientId], references: [id])
+  coach   User     @relation("CoachAppointments", fields: [coachId], references: [id])
+  records Record[]
+}
+
+model SymptomEntry {
+  id        String   @id @default(cuid())
+  clientId  String
+  weekDate  String
+  energy    Int?
+  sleep     Int?
+  digestion Int?
+  mood      Int?
+  stress    Int?
+  appetite  Int?
+  bloating  Int?
+  headaches Int?
+  hydration Int?
+  exercise  Int?
+  notes     String?
+  createdAt DateTime @default(now())
+
+  client User @relation(fields: [clientId], references: [id])
+}
+
+model Form {
+  id          String   @id @default(cuid())
+  clientId    String
+  type        String   @default("INTAKE")
+  data        String
+  submittedAt DateTime @default(now())
+
+  client User @relation(fields: [clientId], references: [id])
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  senderId    String
+  recipientId String
+  content     String
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  sender    User @relation("SentMessages", fields: [senderId], references: [id])
+  recipient User @relation("ReceivedMessages", fields: [recipientId], references: [id])
+}
+
+model Record {
+  id              String       @id @default(cuid())
+  clientId        String
+  coachId         String
+  appointmentId   String?
+  notes           String
+  recommendations String
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  client      User         @relation("ClientRecords", fields: [clientId], references: [id])
+  coach       User         @relation("CoachRecords", fields: [coachId], references: [id])
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
+}
